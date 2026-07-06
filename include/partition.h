@@ -179,7 +179,7 @@ public:
     auto info = Dbg::info();
     if (info.is_active())
       {
-        info.printf("%3zu: %10lld %10lld  %5gMiB [%.37s]\n",
+        info.printf("%3zu: %10lld %10lld  %5g MiB [%.37s]\n",
                     idx, e->first, e->last,
                     (e->last - e->first + 1.0) * secsz / (1 << 20),
                     inf->uuid);
