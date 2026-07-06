@@ -106,12 +106,19 @@ public:
    *                  have been initialized already.
    * \param numds     Maximum number of dataspaces the client is allowed to share.
    * \param readonly  If true the client will have read-only access.
+   * \param msg_user  Debug channel for informational messages relevant for
+   *                  the user. Verbosity of L4Re::Util::Dbg() by default.
+   * \param msg_dev   Debug channel for debugging messages relevant for the
+   *                  developer. Verbosity of L4Re::Util::Dbg(2) by default.
    */
-  Virtio_client(cxx::Ref_ptr<Device_type> const &dev, unsigned numds, bool readonly)
+  Virtio_client(cxx::Ref_ptr<Device_type> const &dev, unsigned numds,
+                bool readonly, L4Re::Util::Dbg msg_user = L4Re::Util::Dbg{},
+                L4Re::Util::Dbg msg_dev = L4Re::Util::Dbg{2})
   : L4virtio::Svr::Block_dev_base<Mem_region_info>(L4VIRTIO_VENDOR_KK, 0x100,
                                                    dev->capacity() >> 9,
                                                    dev->is_read_only()
-                                                     || readonly),
+                                                     || readonly,
+                                                   msg_user, msg_dev),
     _client_invalidate_cb(nullptr),
     _client_idle_cb(nullptr),
     _numds(numds),
