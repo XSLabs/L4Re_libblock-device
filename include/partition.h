@@ -616,8 +616,7 @@ private:
       {
         std::string label = std::string(
           reinterpret_cast<const char *>(sb->name),
-          cxx::min(strlen(reinterpret_cast<const char *>(sb->name)),
-                   sizeof(sb->name)));
+          strnlen(reinterpret_cast<const char *>(sb->name), sizeof(sb->name)));
         label.erase(0, label.find_first_not_of(" "));
         label.erase(label.find_last_not_of(" ") + 1);
         info.printf("Found Ext2 superblock on partition %u, label=%s\n",
