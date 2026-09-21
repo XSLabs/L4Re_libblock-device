@@ -135,6 +135,7 @@ class Gpt_reader : public Base_reader<Gpt_reader<DEV>, DEV>
 public:
   Gpt_reader(Device_type *dev)
   : Base_reader<Gpt_reader<Device_type>, Device_type>(dev),
+    _num_partitions(0),
     _header(2, dev, L4Re::Dma_space::Direction::From_device)
   {}
 
@@ -344,6 +345,7 @@ class Mbr_reader
 public:
   Mbr_reader(Device_type *dev)
   : Base(dev),
+    _num_partitions(0),
     _mbr(nullptr),
     _header(1, dev, L4Re::Dma_space::Direction::From_device),
     _partitions(Mbr::Primary_partitions),
