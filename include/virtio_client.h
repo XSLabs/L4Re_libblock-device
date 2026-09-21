@@ -506,6 +506,7 @@ private:
     l4_uint64_t sector = req->header().sector / (_device->sector_size() >> 9);
 
     maintain_cache_before_req(preq);
+    ++_in_flight;
     int res = _device->inout_data(
       sector, preq->blocks,
       [this, preq](int error, l4_size_t sz) {
@@ -514,9 +515,8 @@ private:
       },
       preq->dir);
 
-    // request successfully submitted to device
-    if (res >= 0)
-      _in_flight++;
+    if (res < 0)
+      --_in_flight; // request not submitted to the device, revert accounting
 
     return res;
   }
@@ -537,13 +537,13 @@ private:
 
   int flush_request(Pending_flush_request *preq)
   {
+    ++_in_flight;
     int res = _device->flush([this, preq](int error, l4_size_t sz) {
       task_finished(preq, error, sz);
     });
 
-    // request successfully submitted to device
-    if (res >= 0)
-      _in_flight++;
+    if (res < 0)
+      --_in_flight; // request not submitted to the device, revert accounting
 
     return res;
   }
@@ -700,14 +700,14 @@ private:
     auto *req = preq->request.get();
     bool discard = (req->header().type == L4VIRTIO_BLOCK_T_DISCARD);
 
+    ++_in_flight;
     int res = _device->discard(
       0, preq->blocks,
       [this, preq](int error, l4_size_t sz) { task_finished(preq, error, sz); },
       discard);
 
-    // request successfully submitted to device
-    if (res >= 0)
-      _in_flight++;
+    if (res < 0)
+      --_in_flight; // request not submitted to the device, revert accounting
 
     return res;
   }
