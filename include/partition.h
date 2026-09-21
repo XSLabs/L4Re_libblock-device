@@ -252,6 +252,21 @@ private:
     info.printf("GUID partition header found with %d partitions.\n",
                 header->partition_array_size);
 
+    if (header->entry_size < sizeof(Gpt::Entry) || header->entry_size % 8 != 0)
+      {
+        Dbg::warn().printf("Invalid GPT partition entry size %u. Ignoring.\n",
+                           header->entry_size);
+        Base::invoke_callback();
+        return;
+      }
+
+    if (header->partition_array_size == 0)
+      {
+        info.printf("GUID partition table is empty.\n");
+        Base::invoke_callback();
+        return;
+      }
+
     _num_partitions =
       cxx::min<l4_uint32_t>(header->partition_array_size, Base::Max_partitions);
 
