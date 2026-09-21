@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <vector>
 
 #include <l4/cxx/unique_ptr>
@@ -123,7 +124,8 @@ public:
     _clients.erase(std::remove_if(_clients.begin(), _clients.end(),
                                   [client](cxx::unique_ptr<Context> &c) {
                                     return c->client == client;
-                                  }));
+                                  }),
+                   _clients.end());
     _next = _clients.cend();
   }
 
