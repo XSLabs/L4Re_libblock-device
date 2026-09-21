@@ -423,26 +423,22 @@ public:
                         std::shared_ptr<Ds_vector const> trusted_dataspaces
                           = nullptr)
   {
-    char _buf[30];
-    const char *buf;
-
     if (partno == 0)
       {
         Err().printf("Invalid partition number 0.\n");
         return -L4_ENODEV;
       }
 
+    /* Could we avoid to make a string here and parsing this again deeper in the
+     * stack? */
+    std::string device_id(device);
     if (partno != -1)
       {
-        /* Could we avoid to make a string here and parsing this again
-         * deeper in the stack? */
-        snprintf(_buf, sizeof(_buf), "%s:%d", device, partno);
-        buf = _buf;
+        device_id += ':';
+        device_id += std::to_string(partno);
       }
-    else
-      buf = device;
 
-    _pending_clients.emplace_back(client, buf, num_ds, readonly,
+    _pending_clients.emplace_back(client, device_id, num_ds, readonly,
                                   enable_trusted_ds_validation,
                                   trusted_dataspaces, cb);
 
