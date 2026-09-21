@@ -62,6 +62,9 @@ public:
   {
     if (this != &rhs)
       {
+        if (_paddr)
+          unmap();
+
         _device = rhs._device;
         _mem_region = cxx::move(rhs._mem_region);
         _region = cxx::move(rhs._region);
